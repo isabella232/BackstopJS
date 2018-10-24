@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 const fs = require('./fs');
 const path = require('path');
@@ -60,7 +60,7 @@ async function processScenarioView (scenario, variantOrScenarioLabelSafe, scenar
     config.engineOptions
   );
 
-  const browser = await puppeteer.launch(puppeteerArgs);
+  const browser = await puppeteer.connect(puppeteerArgs);
   const page = await browser.newPage();
 
   page.setViewport({ width: VP_W, height: VP_H });
@@ -245,7 +245,7 @@ async function processScenarioView (scenario, variantOrScenarioLabelSafe, scenar
       error = e;
     }
   } else {
-    await browser.close();
+    await page.close();
   }
 
   if (error) {
@@ -331,11 +331,11 @@ async function delegateSelectors (
     };
     next();
   }).then(async () => {
-    console.log(chalk.green('x Close Browser'));
-    await browser.close();
+    console.log(chalk.green('x Close Page'));
+    await page.close();
   }).catch(async (err) => {
     console.log(chalk.red(err));
-    await browser.close();
+    await page.close();
   }).then(_ => compareConfig);
 }
 
